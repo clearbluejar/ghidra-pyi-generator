@@ -7,7 +7,36 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  check-release:
+    runs-on: ubuntu-20.04
+    outputs:
+      ghidra-repo-release: ${{ steps.get_ghidra_ver.outputs.release }}
+      ghidra-latest-ver: ${{ steps.format_ghidra_ver.outputs.ghidra_ver }}
+      self-release: ${{ steps.self.outputs.release }}
+      already-exists: contains( steps.format_ghidra_ver.outputs.ghidra_ver, steps.self.outputs.release)
+    steps:
+      - name: Get Latest Ghidra Version
+        id: get_ghidra_ver
+        uses: pozetroninc/github-action-get-latest-release@v0.6.0
+        with:
+          repository: NationalSecurityAgency/ghidra
+          excludes: prerelease, draft
+      - id: self
+        uses: pozetroninc/github-action-get-latest-release@v0.6.0
+        with:
+          repository: ${{ github.repository }}
+      - name: Format Ghidra Version
+        id: format_ghidra_ver
+        run: |
+          ghidra_ver=$(echo ${{steps.get_ghidra_ver.outputs.release}} | cut -d_ -f2)
+          echo "::set-output name=ghidra_ver::$ghidra_ver"
+      
+
   build-n-publish:
+    needs: 
+      - check-release
+    if: ! needs.check-release.outputs.already-exists
     name: Build Python Package
     runs-on: ubuntu-20.04
     steps:
@@ -27,13 +56,6 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: NationalSecurityAgency/ghidra
-          
-      - name: Format Ghidra Version
-        id: format_ghidra_ver
-        run: |
-          ghidra_ver=$(echo ${{steps.get_ghidra_ver.outputs.release}} | cut -d_ -f2)
-          echo "::set-output name=ghidra_ver::$ghidra_ver"
-          echo "Latest Local - ${{ steps.format_ghidra_ver.outputs.ghidra_ver }}"
           
       - uses: er28-0652/setup-ghidra@master
         with:
