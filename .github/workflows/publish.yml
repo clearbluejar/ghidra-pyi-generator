@@ -36,7 +36,7 @@ jobs:
   build-n-publish:
     needs: 
       - check-release
-    if: ! needs.check-release.outputs.already-exists
+    if: needs.check-release.outputs.already-exists == 'false'
     name: Build Python Package
     runs-on: ubuntu-20.04
     steps:
