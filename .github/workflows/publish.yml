@@ -24,7 +24,7 @@ jobs:
 
       - uses: er28-0652/setup-ghidra@master
         with:
-          version: "10.1.2"
+          version: "latest"
 
       - name: Prepare Jython Environment
         run:
@@ -52,13 +52,6 @@ jobs:
         run: |
           python setup.py bdist_wheel --universal
           python setup.py sdist
-
-
-      - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-
 
       - name: Release on GitHub
         uses: softprops/action-gh-release@v1
