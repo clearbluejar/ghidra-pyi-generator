@@ -23,14 +23,19 @@ jobs:
           python-version: "2.7"
           
       - name: Get Latest Ghidra Version
-        id: ghidra-ver
+        id: ghidra_latest_ver
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: NationalSecurityAgency/ghidra
+          
+      # Check the local release we got back
+      - name: Check Output
+        run: |
+          echo "Latest Local - ${{ steps.ghidra_latest_ver.outputs.release }}"
 
       - uses: er28-0652/setup-ghidra@master
         with:
-          version: "${ steps.ghidra-ver.outputs.release }"
+          version: "${{ steps.ghidra_latest_ver.outputs.release }}"
 
       - name: Prepare Jython Environment
         run:
