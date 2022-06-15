@@ -28,9 +28,8 @@ jobs:
         with:
           repository: NationalSecurityAgency/ghidra
           
-      # Check the local release we got back
       - name: Format Ghidra Version
-      - id: format_ghidra_ver
+        id: format_ghidra_ver
         run: |
           ghidra_ver=$(echo ${{steps.get_ghidra_ver.outputs.release}} | cut -d_ -f2)
           echo "::set-output name=ghidra_ver::$ghidra_ver"
