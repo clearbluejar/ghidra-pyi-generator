@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-n-publish:
-    name: Build and publish Python Package
+    name: Build Python Package
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -21,10 +21,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "2.7"
+          
+      - name: Get Latest Ghidra Version
+        id: ghidra-ver
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: NationalSecurityAgency/ghidra
 
       - uses: er28-0652/setup-ghidra@master
         with:
-          version: ""
+          version: "${ steps.ghidra-ver.outputs.release }"
 
       - name: Prepare Jython Environment
         run:
