@@ -70,5 +70,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ./dist/*
+          tag_name: "v1.0.3-${{ steps.format_ghidra_ver.outputs.ghidra_ver }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
