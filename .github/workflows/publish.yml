@@ -61,7 +61,7 @@ jobs:
           
       - uses: er28-0652/setup-ghidra@master
         with:
-          version: "${{ needs.check-release.outputs.ghidra_ver }}"
+          version: "${{ needs.check-release.outputs.ghidra-latest-ver }}"
 
       - name: Prepare Jython Environment
         run:
@@ -94,6 +94,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ./dist/*
-          tag_name: "v1.0.3-${{ steps.format_ghidra_ver.outputs.ghidra_ver }}"
+          tag_name: "v1.0.3-${{ needs.check-release.outputs.ghidra-latest-ver }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
