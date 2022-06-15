@@ -57,17 +57,11 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: "2.7"
-          
-      - name: Get Latest Ghidra Version
-        id: get_ghidra_ver
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          repository: NationalSecurityAgency/ghidra
+          python-version: "2.7"       
           
       - uses: er28-0652/setup-ghidra@master
         with:
-          version: "${{ steps.format_ghidra_ver.outputs.ghidra_ver }}"
+          version: "${{ needs.check-release.outputs.ghidra_ver }}"
 
       - name: Prepare Jython Environment
         run:
