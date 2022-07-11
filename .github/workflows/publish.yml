@@ -5,6 +5,12 @@ on:
 #    tags:
 #      - 'v*.*.*'
   workflow_dispatch:
+    inputs:
+      ghidra-ver:
+        description: 'Specify Ghidra Version to Build'
+        required: true
+        type: string
+        default: 'latest'
   schedule:
     - cron: "0 13 * * 3"
     
@@ -15,7 +21,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       ghidra-repo-release: ${{ steps.get_ghidra_ver.outputs.release }}
-      ghidra-latest-ver: ${{ steps.format_ghidra_ver.outputs.ghidra_ver }}
+      ghidra-ver: ${{ steps.format_ghidra_ver.outputs.ghidra_ver }}
       self-release: ${{ steps.self.outputs.release }}
       already-exists: ${{ contains( steps.format_ghidra_ver.outputs.ghidra_ver, steps.self.outputs.release) }}
     steps:
@@ -29,12 +35,19 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@v0.6.0
         with:
           repository: ${{ github.repository }}
-      - name: Format Ghidra Version
+      - name: Set Ghidra Version from Latest
         id: format_ghidra_ver
         run: |
           ghidra_ver=$(echo ${{steps.get_ghidra_ver.outputs.release}} | cut -d_ -f2)
           echo "::set-output name=ghidra_ver::$ghidra_ver"
-      - name: Print Versions
+      - name: Set Ghidra Version from Input
+        id: format_ghidra_ver
+        run: |
+          ghidra_ver=$(echo ${{github.event.inputs.ghidra_ver}})
+          echo "::set-output name=ghidra_ver::$ghidra_ver"
+
+      
+      - name: Print Versions and Already Exists
         run: |
           echo "${{steps.format_ghidra_ver.outputs.ghidra_ver}}  ${{steps.self.outputs.release }}"
           echo "already exists ${{contains( steps.format_ghidra_ver.outputs.ghidra_ver, steps.self.outputs.release) }}"
@@ -61,7 +74,7 @@ jobs:
           
       - uses: er28-0652/setup-ghidra@master
         with:
-          version: "${{ needs.check-release.outputs.ghidra-latest-ver }}"
+          version: "${{ needs.check-release.outputs.ghidra-ver }}"
 
       - name: Prepare Jython Environment
         run:
@@ -94,6 +107,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ./dist/*
-          tag_name: "v1.0.3-${{ needs.check-release.outputs.ghidra-latest-ver }}"
+          tag_name: "v1.0.3-${{ needs.check-release.outputs.ghidra-ver }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
