@@ -83,7 +83,7 @@ jobs:
 
       - name: Prepare Jython Environment
         run:
-          pip2.7 install --target="$GHIDRA_INSTALL_DIR/Ghidra/Features/Python/data/jython-2.7.2/Lib/site-packages" attrs typing
+          pip2.7 install --target="$GHIDRA_INSTALL_DIR/Ghidra/Features/Python/data/jython*/**/site-packages/" attrs typing
 
       - name: Build Package
         run: |
